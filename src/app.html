@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="text-scale" content="scale" />
+		<link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/mark-180.png" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="likh" />
+		<script>
+			/*
+			 * Appearance, before the first paint.
+			 *
+			 * Settings live in IndexedDB and cannot be read synchronously, so this
+			 * reads the mirror `applyAppearance` leaves in localStorage. Losing it
+			 * costs one flash of the defaults and nothing else. The light/dark pair
+			 * below repeats `SYSTEM_PAIR`; `themes.test.ts` checks they still agree.
+			 */
+			try {
+				var paint = JSON.parse(localStorage.getItem('likh-paint'));
+				if (paint) {
+					var root = document.documentElement;
+					root.dataset.theme =
+						paint.theme === 'system'
+							? matchMedia('(prefers-color-scheme: dark)').matches
+								? 'ink'
+								: 'paper'
+							: paint.theme;
+					if (paint.size) root.style.setProperty('--editor-size', paint.size);
+					if (paint.measure) root.style.setProperty('--measure', paint.measure);
+				}
+			} catch (error) {
+				// Storage denied, or nothing stored yet; the CSS defaults are correct.
+			}
+		</script>
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

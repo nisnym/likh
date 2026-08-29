@@ -1,0 +1,265 @@
+/*
+ * likh design tokens.
+ *
+ * Three rules govern this file:
+ *
+ *  1. Every token gets its real value on bare `:root`, which is the Paper
+ *     theme. A palette block only ever *re-declares* tokens, never introduces
+ *     one, so a theme that forgets a token falls back to something readable
+ *     rather than to nothing.
+ *  2. Paper and Ink read like paper and ink: no pure black, no pure white, no
+ *     blue-grey, a little warmth throughout. Daylight is the deliberate
+ *     exception — it exists to be crisp and high-contrast in direct sun, and it
+ *     is cool and nearly white on purpose.
+ *  3. There is no `prefers-color-scheme` block. Following the system is a
+ *     *choice* the user makes in Settings, and it is resolved to a concrete
+ *     theme in JavaScript before paint (see `applyAppearance` and the inline
+ *     script in `app.html`). Resolving it there rather than here keeps every
+ *     palette in exactly one place instead of two.
+ *
+ * The palette selectors are unqualified — `[data-theme='ink']`, not
+ * `:root[data-theme='ink']` — so a swatch in Settings can wear a theme and show
+ * its real colours, rather than a hard-coded impression of them.
+ */
+
+/* --- Paper: warm off-white, terracotta. The default. ------------------ */
+
+:root,
+:root[data-theme='paper'] {
+	color-scheme: light;
+
+	/* Surfaces */
+	--bg: oklch(98.8% 0.006 85);
+	--bg-raised: oklch(100% 0 0);
+	--bg-sunken: oklch(96.4% 0.008 85);
+	--bg-overlay: oklch(98.8% 0.006 85 / 0.86);
+
+	/* Text */
+	--ink: oklch(27% 0.015 65);
+	--ink-muted: oklch(52% 0.012 65);
+	--ink-faint: oklch(71% 0.01 65);
+
+	/* Lines */
+	--rule: oklch(90% 0.008 80);
+	--rule-strong: oklch(83% 0.01 80);
+
+	/* Accent — used sparingly: today's date, focus, unsaved state */
+	--accent: oklch(55% 0.14 42);
+	--accent-hover: oklch(48% 0.15 42);
+	--accent-soft: oklch(94% 0.032 42);
+	--accent-contrast: oklch(99% 0.005 85);
+
+	/* Status */
+	--ok: oklch(56% 0.11 150);
+	--warn: oklch(64% 0.13 75);
+	--danger: oklch(55% 0.17 27);
+
+	--shadow-sm: 0 1px 2px oklch(27% 0.015 65 / 0.06);
+	--shadow: 0 2px 8px oklch(27% 0.015 65 / 0.08), 0 1px 2px oklch(27% 0.015 65 / 0.04);
+	--shadow-lg: 0 12px 32px oklch(27% 0.015 65 / 0.12), 0 2px 6px oklch(27% 0.015 65 / 0.06);
+}
+
+/* --- Sepia: aged paper, brown ink. Gentler for long sittings. --------- */
+
+[data-theme='sepia'] {
+	color-scheme: light;
+
+	--bg: oklch(95.5% 0.022 78);
+	--bg-raised: oklch(97.5% 0.018 80);
+	--bg-sunken: oklch(92.5% 0.028 76);
+	--bg-overlay: oklch(95.5% 0.022 78 / 0.88);
+
+	--ink: oklch(32% 0.035 55);
+	--ink-muted: oklch(50% 0.03 55);
+	--ink-faint: oklch(66% 0.028 60);
+
+	--rule: oklch(87% 0.026 74);
+	--rule-strong: oklch(78% 0.03 70);
+
+	--accent: oklch(48% 0.11 35);
+	--accent-hover: oklch(42% 0.12 35);
+	--accent-soft: oklch(89% 0.05 45);
+	--accent-contrast: oklch(97% 0.02 80);
+
+	--ok: oklch(50% 0.1 145);
+	--warn: oklch(58% 0.12 70);
+	--danger: oklch(50% 0.16 27);
+
+	--shadow-sm: 0 1px 2px oklch(32% 0.035 55 / 0.08);
+	--shadow: 0 2px 8px oklch(32% 0.035 55 / 0.1), 0 1px 2px oklch(32% 0.035 55 / 0.05);
+	--shadow-lg: 0 12px 32px oklch(32% 0.035 55 / 0.14), 0 2px 6px oklch(32% 0.035 55 / 0.07);
+}
+
+/* --- Daylight: cool and crisp, for a bright room or a dim screen. ----- */
+
+[data-theme='daylight'] {
+	color-scheme: light;
+
+	--bg: oklch(99.2% 0.002 250);
+	--bg-raised: oklch(100% 0 0);
+	--bg-sunken: oklch(95.5% 0.004 250);
+	--bg-overlay: oklch(99.2% 0.002 250 / 0.88);
+
+	--ink: oklch(18% 0.01 250);
+	--ink-muted: oklch(42% 0.012 250);
+	--ink-faint: oklch(60% 0.012 250);
+
+	--rule: oklch(89% 0.005 250);
+	--rule-strong: oklch(78% 0.007 250);
+
+	--accent: oklch(48% 0.16 255);
+	--accent-hover: oklch(41% 0.17 255);
+	--accent-soft: oklch(93% 0.04 255);
+	--accent-contrast: oklch(99% 0 0);
+
+	--ok: oklch(48% 0.13 150);
+	--warn: oklch(56% 0.14 70);
+	--danger: oklch(50% 0.19 27);
+
+	--shadow-sm: 0 1px 2px oklch(18% 0.01 250 / 0.07);
+	--shadow: 0 2px 8px oklch(18% 0.01 250 / 0.09), 0 1px 2px oklch(18% 0.01 250 / 0.05);
+	--shadow-lg: 0 12px 32px oklch(18% 0.01 250 / 0.14), 0 2px 6px oklch(18% 0.01 250 / 0.07);
+}
+
+/* --- Ink: the warm dark. ---------------------------------------------- */
+
+[data-theme='ink'] {
+	color-scheme: dark;
+
+	--bg: oklch(17.5% 0.008 60);
+	--bg-raised: oklch(21% 0.009 60);
+	--bg-sunken: oklch(14% 0.007 60);
+	--bg-overlay: oklch(17.5% 0.008 60 / 0.86);
+
+	--ink: oklch(90% 0.012 80);
+	--ink-muted: oklch(68% 0.012 75);
+	--ink-faint: oklch(48% 0.01 70);
+
+	--rule: oklch(28% 0.01 60);
+	--rule-strong: oklch(36% 0.012 60);
+
+	--accent: oklch(72% 0.12 45);
+	--accent-hover: oklch(78% 0.12 45);
+	--accent-soft: oklch(27% 0.04 45);
+	--accent-contrast: oklch(17.5% 0.008 60);
+
+	--ok: oklch(72% 0.13 150);
+	--warn: oklch(76% 0.12 75);
+	--danger: oklch(68% 0.15 27);
+
+	--shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.3);
+	--shadow: 0 2px 8px oklch(0% 0 0 / 0.36), 0 1px 2px oklch(0% 0 0 / 0.24);
+	--shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.44), 0 2px 6px oklch(0% 0 0 / 0.3);
+}
+
+/* --- Midnight: the cool dark. ----------------------------------------- */
+
+[data-theme='midnight'] {
+	color-scheme: dark;
+
+	--bg: oklch(18.5% 0.018 265);
+	--bg-raised: oklch(22.5% 0.02 265);
+	--bg-sunken: oklch(15% 0.016 265);
+	--bg-overlay: oklch(18.5% 0.018 265 / 0.88);
+
+	--ink: oklch(89% 0.015 250);
+	--ink-muted: oklch(67% 0.018 250);
+	--ink-faint: oklch(48% 0.018 255);
+
+	--rule: oklch(27% 0.02 265);
+	--rule-strong: oklch(36% 0.024 265);
+
+	--accent: oklch(74% 0.13 250);
+	--accent-hover: oklch(80% 0.12 250);
+	--accent-soft: oklch(28% 0.06 255);
+	--accent-contrast: oklch(18.5% 0.018 265);
+
+	--ok: oklch(74% 0.13 160);
+	--warn: oklch(78% 0.12 80);
+	--danger: oklch(70% 0.15 25);
+
+	--shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.34);
+	--shadow: 0 2px 8px oklch(0% 0 0 / 0.4), 0 1px 2px oklch(0% 0 0 / 0.26);
+	--shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.5), 0 2px 6px oklch(0% 0 0 / 0.32);
+}
+
+/* --- Ember: dim and warm, for writing with the lights off. ------------ */
+
+[data-theme='ember'] {
+	color-scheme: dark;
+
+	--bg: oklch(15% 0.008 55);
+	--bg-raised: oklch(18.5% 0.01 55);
+	--bg-sunken: oklch(12% 0.006 55);
+	--bg-overlay: oklch(15% 0.008 55 / 0.9);
+
+	/* Deliberately dimmer than the other darks: this theme is for a room with
+	   no other light in it, where full-strength text is uncomfortable. */
+	--ink: oklch(79% 0.045 70);
+	--ink-muted: oklch(60% 0.04 65);
+	--ink-faint: oklch(42% 0.03 60);
+
+	--rule: oklch(23% 0.014 55);
+	--rule-strong: oklch(31% 0.018 55);
+
+	--accent: oklch(70% 0.13 55);
+	--accent-hover: oklch(76% 0.13 55);
+	--accent-soft: oklch(24% 0.05 50);
+	--accent-contrast: oklch(15% 0.008 55);
+
+	--ok: oklch(68% 0.11 145);
+	--warn: oklch(74% 0.12 75);
+	--danger: oklch(65% 0.15 28);
+
+	--shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.4);
+	--shadow: 0 2px 8px oklch(0% 0 0 / 0.48), 0 1px 2px oklch(0% 0 0 / 0.3);
+	--shadow-lg: 0 12px 32px oklch(0% 0 0 / 0.56), 0 2px 6px oklch(0% 0 0 / 0.36);
+}
+
+/* --- Everything that does not change with the theme ------------------- */
+
+:root {
+	--font-serif:
+		'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Source Serif 4', Georgia, serif;
+	--font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+	--text-xs: 0.75rem;
+	--text-sm: 0.8125rem;
+	--text-base: 1.0625rem;
+	--text-lg: 1.25rem;
+	--text-xl: 1.5rem;
+	--text-2xl: 2rem;
+
+	--leading-tight: 1.25;
+	--leading-body: 1.7;
+
+	/* Space — 4px base */
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+	--space-12: 3rem;
+	--space-16: 4rem;
+
+	/* Shape */
+	--radius-sm: 4px;
+	--radius: 8px;
+	--radius-lg: 14px;
+
+	/*
+	 * The writing surface's metrics. Both are overridden on `<html>` once
+	 * settings load; the values here are what the page is painted with until
+	 * then, so they must stay equal to `DEFAULT_SETTINGS`.
+	 */
+	--measure: 42rem;
+	--editor-size: 19px;
+
+	/* Motion */
+	--ease: cubic-bezier(0.2, 0, 0, 1);
+	--dur-fast: 120ms;
+	--dur: 200ms;
+	--dur-slow: 400ms;
+}

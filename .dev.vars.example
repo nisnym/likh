@@ -1,0 +1,12 @@
+# Copy to `.dev.vars` for local development. Never commit `.dev.vars`.
+#
+# Create a GitHub App at https://github.com/settings/apps/new with:
+#   - Callback URL:        http://localhost:5173/auth/callback
+#   - Repository permissions: Contents = Read and write
+#   - "Request user authorization (OAuth) during installation": on
+#   - Webhooks: off
+#
+# The client id and app slug also belong in wrangler.jsonc `vars` for deploys.
+GITHUB_CLIENT_ID=Iv1.your_client_id
+GITHUB_CLIENT_SECRET=your_client_secret
+GITHUB_APP_SLUG=your-app-slug

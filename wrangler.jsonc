@@ -1,0 +1,35 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "likh",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"compatibility_date": "2026-08-28",
+	"compatibility_flags": ["nodejs_compat"],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare",
+		// Non-matching navigations fall through to the SPA shell so client-side
+		// routing (and the offline service worker) own the URL space.
+		"not_found_handling": "single-page-application",
+		// ...but the Worker must win for the BFF endpoints, otherwise these
+		// would be swallowed by the SPA fallback above.
+		"run_worker_first": ["/api/*", "/auth/*"]
+	},
+
+	// OAuth transactions and sessions. Create your own before deploying:
+	//   wrangler kv namespace create SESSIONS
+	// then replace the id below. Local `vite dev` and `wrangler dev` simulate
+	// this namespace, so the placeholder is fine for development.
+	"kv_namespaces": [{ "binding": "SESSIONS", "id": "replace-with-your-kv-namespace-id" }],
+
+	// Public values. The client secret is not here — set it with
+	//   wrangler secret put GITHUB_CLIENT_SECRET
+	// and put it in .dev.vars for local development.
+	"vars": {
+		"GITHUB_CLIENT_ID": "",
+		"GITHUB_APP_SLUG": ""
+	},
+
+	"observability": {
+		"enabled": true
+	}
+}

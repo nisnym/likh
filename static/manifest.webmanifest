@@ -1,0 +1,29 @@
+{
+	"name": "likh",
+	"short_name": "likh",
+	"description": "Offline-first journaling that saves to your own GitHub repo, one markdown file per day.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "portrait-primary",
+	"background_color": "#faf8f5",
+	"theme_color": "#faf8f5",
+	"categories": ["productivity", "lifestyle"],
+	"icons": [
+		{ "src": "/icons/mark-192.png", "sizes": "192x192", "type": "image/png" },
+		{ "src": "/icons/mark-512.png", "sizes": "512x512", "type": "image/png" },
+		{
+			"src": "/icons/maskable-192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "maskable"
+		},
+		{
+			"src": "/icons/maskable-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	],
+	"shortcuts": [{ "name": "Today", "url": "/", "description": "Open today's entry" }]
+}

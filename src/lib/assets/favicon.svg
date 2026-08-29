@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#1c1a18"/>
+  <!-- A handwritten 'l' with the dot of an 'i': the first stroke of लिख. -->
+  <path d="M186 116 L186 330 Q186 382 238 382 L286 382"
+        fill="none" stroke="#faf8f5" stroke-width="38"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="330" cy="150" r="26" fill="#e07a4f"/>
+</svg>

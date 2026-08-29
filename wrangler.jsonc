@@ -14,13 +14,17 @@
 		// would be swallowed by the SPA fallback above.
 		"run_worker_first": ["/api/*", "/auth/*"]
 	},
-
-	// OAuth transactions and sessions. Create your own before deploying:
+	// OAuth transactions and sessions. The id below is likh.dev's own namespace.
+	// Deploying your own copy? Make yours and swap it in:
 	//   wrangler kv namespace create SESSIONS
-	// then replace the id below. Local `vite dev` and `wrangler dev` simulate
-	// this namespace, so the placeholder is fine for development.
-	"kv_namespaces": [{ "binding": "SESSIONS", "id": "replace-with-your-kv-namespace-id" }],
-
+	// Local `vite dev` and `wrangler dev` simulate this namespace, so any id
+	// works for development.
+	"kv_namespaces": [
+		{
+			"binding": "SESSIONS",
+			"id": "ff5a6465798b4ce7a6aa81603b5e1ecb"
+		}
+	],
 	// Public values. The client secret is not here — set it with
 	//   wrangler secret put GITHUB_CLIENT_SECRET
 	// and put it in .dev.vars for local development.
@@ -28,7 +32,6 @@
 		"GITHUB_CLIENT_ID": "",
 		"GITHUB_APP_SLUG": ""
 	},
-
 	"observability": {
 		"enabled": true
 	}

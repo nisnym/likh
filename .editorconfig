@@ -1,0 +1,21 @@
+# Matches .prettierrc: tabs, and a newline at the end of every file.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = tab
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Prettier writes these with spaces regardless of `useTabs`.
+[*.{json,jsonc,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Two trailing spaces are a hard line break in markdown, so nothing may strip
+# them here — the same reason the journal body is written verbatim.
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false

@@ -121,7 +121,7 @@ The journal, the writing surface and the sync engine are built. These are the ne
 | **Export everything**      | A zip of your markdown, without a repo, without an account      |
 | **Real typography**        | Self-hosted variable fonts instead of whatever the OS has       |
 | **A first-run that sings** | The empty state is where people decide whether to come back     |
-| **The landing page**       | likh.dev doesn't exist yet                                      |
+| **A landing page**         | likh.dev serves the app itself; there's nothing to read first   |
 | **Tags**                   | The file format reserves the field; nothing yet writes to it    |
 
 Further out, and unbuilt on purpose: **GitLab, Gitea and plain self-hosted git** (the client is
@@ -160,10 +160,10 @@ Early, honest, and usable. The journal works offline, syncs to a GitHub repo, an
 editing the same day converge without losing text — proven by 258 unit tests (run across five
 timezones) and 80 end-to-end tests on desktop and mobile viewports.
 
-Not yet: images, and a run against real GitHub — sync is verified against a complete in-memory
-GitHub rather than the live API, and likh.dev is not deployed. If you want to run it against your
-own repo today, you can, with a personal access token and no server at all.
-
+It's live at **[likh.dev](https://likh.dev)**. Not yet: images, and a run against real GitHub —
+sync is verified against a complete in-memory GitHub rather than the live API. Hosted sign-in isn't
+switched on there yet either, so today you connect it to your own repo with a personal access
+token — which needs no server at all.
 
 ## License
 

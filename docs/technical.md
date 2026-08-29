@@ -187,6 +187,7 @@ pnpm dev
 | `pnpm test:tz`    | Unit tests across five timezones                  |
 | `pnpm test:e2e`   | End-to-end tests (Playwright), desktop and mobile |
 | `pnpm format`     | Prettier                                          |
+| `pnpm verify`     | The full gate: check, test, test:tz, test:e2e     |
 | `pnpm cf:preview` | Build and serve through the real Workers runtime  |
 | `pnpm deploy`     | Build and deploy to Cloudflare Workers            |
 
@@ -196,7 +197,9 @@ there — everything else works, including the whole journal and the personal-to
 
 ## Testing
 
-`pnpm test && pnpm test:tz && pnpm test:e2e` is the gate, and it should be green before a PR.
+`pnpm verify` is the gate — `check`, `test`, `test:tz` and `test:e2e` in that order — and it
+should be green before a PR. `pnpm check` is part of it because `svelte-check` is what catches
+type and template errors here; there is no separate linter.
 
 - **Unit** — the frontmatter round-trip, the merge, the formatting engine and the scheduler are all
   pure functions tested against plain strings, several with `fast-check` property tests (marks are

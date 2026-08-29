@@ -1,10 +1,22 @@
 {
 	"name": "likh",
 	"description": "Offline-first journaling that saves to your own GitHub repo, one markdown file per day.",
+	"version": "0.1.0",
 	"private": true,
-	"version": "0.0.1",
 	"type": "module",
 	"license": "MIT",
+	"homepage": "https://likh.dev",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nisnym/likh.git"
+	},
+	"bugs": {
+		"url": "https://github.com/nisnym/likh/issues"
+	},
+	"engines": {
+		"node": ">=22.12.0"
+	},
+	"packageManager": "pnpm@10.17.0",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -20,7 +32,8 @@
 		"format:check": "prettier --check .",
 		"deploy": "pnpm build && wrangler deploy",
 		"cf:preview": "pnpm build && wrangler dev",
-		"cf:typegen": "wrangler types ./src/worker-configuration.d.ts"
+		"cf:typegen": "wrangler types ./src/worker-configuration.d.ts",
+		"verify": "pnpm check && pnpm test && pnpm test:tz && pnpm test:e2e"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^5.20260828.1",
@@ -29,7 +42,6 @@
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@vitest/coverage-v8": "^4.1.11",
-		"eslint": "^10.9.1",
 		"fake-indexeddb": "^6.2.5",
 		"fast-check": "^4.9.0",
 		"prettier": "^3.9.6",

@@ -4,6 +4,42 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="text-scale" content="scale" />
+
+		<!--
+			The app renders client-side (`ssr = false`), so SvelteKit's head
+			placeholder below contributes nothing a crawler can read. Everything an
+			unfurler or a search engine needs has to be static and live here; the
+			routes still set their own title, which replaces this one once the client
+			router takes over.
+
+			Do not name that placeholder in this comment. It is substituted by literal
+			string replacement, anywhere in the file, including inside a comment —
+			which silently moves the whole head in here and leaves the real one behind.
+
+			og:image and og:url are absolute because unfurlers do not resolve relative
+			paths.
+		-->
+		<title>likh — a journal that writes to your own GitHub repo</title>
+		<meta
+			name="description"
+			content="Offline-first journaling that saves to your own GitHub repo. One markdown file per day, every save a real git commit. Works with no internet at all."
+		/>
+		<link rel="canonical" href="https://likh.dev/" />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="likh" />
+		<meta property="og:url" content="https://likh.dev/" />
+		<meta property="og:title" content="likh — a journal that writes to your own GitHub repo" />
+		<meta
+			property="og:description"
+			content="One markdown file per day. Every save is a real git commit. Works on a plane."
+		/>
+		<meta property="og:image" content="https://likh.dev/og.png" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="likh — a journal that writes to your own GitHub repo" />
+		<meta name="twitter:card" content="summary_large_image" />
+
 		<link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/mark-180.png" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />

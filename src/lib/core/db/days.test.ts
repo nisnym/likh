@@ -8,7 +8,7 @@ import {
 	getDay,
 	listConflictedDays,
 	listDirtyDays,
-	listWrittenKeys,
+	listWrittenCounts,
 	markSynced,
 	putDay,
 	saveDay
@@ -37,14 +37,32 @@ describe('saveDay', () => {
 		expect((await getDay(DAY)).body).toBe('Shipped the sync layer.');
 	});
 
-	it('normalises trailing whitespace on the way in', async () => {
-		expect((await saveDay(DAY, { body: 'text\n\n  \n' })).body).toBe('text');
+	it('keeps the body exactly as typed, trailing space and all', async () => {
+		// The editor is bound to this record. Rewriting it here deleted the space
+		// out from under the cursor whenever someone paused mid-sentence, and the
+		// next word arrived glued to the previous one.
+		await saveDay(DAY, { body: 'Shipped the sync layer ' });
+
+		expect((await getDay(DAY)).body).toBe('Shipped the sync layer ');
+	});
+
+	it('does not commit a day whose only change is trailing whitespace', async () => {
+		// What the normalising above was really protecting: the file is what has
+		// to stay stable, and it is serialization that trims it.
+		await saveDay(DAY, { body: 'text' });
+		await markSynced(DAY, dayToText(await getDay(DAY)), 'sha1');
+
+		await saveDay(DAY, { body: 'text  \n\n' });
+
+		const saved = await getDay(DAY);
+		expect(saved.body).toBe('text  \n\n');
+		expect(saved.dirty).toBe(0);
 	});
 
 	it('does not store an empty day that was never synced', async () => {
 		await saveDay(DAY, { body: '   \n' });
 
-		expect(await listWrittenKeys()).toEqual([]);
+		expect(await listWrittenCounts()).toEqual(new Map());
 	});
 
 	it('clears dirty when an edit is undone back to the synced text', async () => {
@@ -127,14 +145,26 @@ describe('queries', () => {
 		await saveDay(DAY, { body: 'written' });
 		await putDay({ ...emptyDay('2026-08-29'), baseText: '---\ndate: 2026-08-29\n---\n' });
 
-		expect(await listWrittenKeys()).toEqual([DAY]);
+		expect([...(await listWrittenCounts()).keys()]).toEqual([DAY]);
+	});
+
+	it('carries the word count of each written day', async () => {
+		await saveDay(DAY, { body: 'four words go here' });
+		await saveDay('2026-08-29', { body: 'two words' });
+
+		expect(await listWrittenCounts()).toEqual(
+			new Map([
+				[DAY, 4],
+				['2026-08-29', 2]
+			])
+		);
 	});
 
 	it('deletes a day', async () => {
 		await saveDay(DAY, { body: 'text' });
 		await deleteDay(DAY);
 
-		expect(await listWrittenKeys()).toEqual([]);
+		expect(await listWrittenCounts()).toEqual(new Map());
 	});
 });
 

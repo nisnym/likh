@@ -1,7 +1,7 @@
 import type { DayKey } from '../date/day';
 import { hasConflictMarkers } from '../markdown/conflict';
-import { normalizeBody } from '../markdown/frontmatter';
 import { dayToText, isEmptyDay } from '../repo/day-file';
+import { countWords } from '../stats/writing';
 import { db } from './schema';
 import type { DayRecord } from './types';
 
@@ -48,7 +48,11 @@ export async function saveDay(date: DayKey, edit: DayEdit): Promise<DayRecord> {
 	const current = (await store.get(date)) ?? emptyDay(date);
 	const next: DayRecord = {
 		...current,
-		body: edit.body === undefined ? current.body : normalizeBody(edit.body),
+		// Stored exactly as typed. Trailing whitespace is stripped when the day is
+		// serialized to a file and nowhere else: normalizing here rewrote the
+		// record the editor is bound to, so pausing after a space deleted it from
+		// under the cursor and the next word arrived glued to the previous one.
+		body: edit.body === undefined ? current.body : edit.body,
 		tags: edit.tags ?? current.tags
 	};
 
@@ -128,11 +132,23 @@ export async function listAllDays(): Promise<DayRecord[]> {
 	return (await db()).getAll('days');
 }
 
-/** Every day key that has content, ascending — the calendar's heatmap source. */
-export async function listWrittenKeys(): Promise<DayKey[]> {
+/**
+ * Every day that holds something, with its word count.
+ *
+ * One scan feeds three things — which days the calendar dots, how darkly it
+ * dots them, and the totals in the sidebar — because asking separately would
+ * mean three passes over the same store and three chances to disagree about
+ * what counts as written.
+ */
+export async function listWrittenCounts(): Promise<Map<DayKey, number>> {
 	const all = await (await db()).getAll('days');
+	const counts = new Map<DayKey, number>();
 
-	return all.filter((day) => !isEmptyDay(day)).map((day) => day.date);
+	for (const day of all) {
+		if (!isEmptyDay(day)) counts.set(day.date, countWords(day.body));
+	}
+
+	return counts;
 }
 
 function sameTags(a: string[], b: string[]): boolean {

@@ -8,6 +8,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import SearchPanel from '$lib/components/SearchPanel.svelte';
 	import SyncIndicator from '$lib/components/SyncIndicator.svelte';
+	import WritingStats from '$lib/components/WritingStats.svelte';
 	import SettingsSheet, { type SettingsTab } from '$lib/components/SettingsSheet.svelte';
 	import { search } from '$lib/search/client.svelte';
 	import {
@@ -198,10 +199,12 @@
 		<div class="sidebar-inner">
 			<Calendar
 				selected={date}
-				written={journal.writtenKeys}
+				written={journal.written}
 				onSelect={open}
 				locale={settings.current.locale}
 			/>
+
+			<WritingStats written={journal.written} locale={settings.current.locale} />
 		</div>
 	</aside>
 
@@ -417,8 +420,13 @@
 		border-right-color: var(--rule);
 	}
 
+	/* Scrolls on its own once the calendar and the year's numbers outrun a short
+	   window; `contain` keeps that scroll from carrying on into the entry. */
 	.sidebar-inner {
 		width: 17rem;
+		height: 100%;
+		overflow-y: auto;
+		overscroll-behavior: contain;
 		padding: var(--space-6) var(--space-4);
 	}
 

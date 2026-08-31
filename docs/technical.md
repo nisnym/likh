@@ -64,6 +64,25 @@ written only after a successful pull or push and never after a local edit.
 There is no operation log. The changeset is derived from the `dirty` flag, which is what makes sync
 idempotent and crash-safe — an interrupted push simply replays.
 
+### Counting what was written
+
+`core/stats/writing.ts` holds all of it: what a word is, where a run of days breaks, and how darkly
+the calendar marks a day. One module because three places show these numbers — the status bar, the
+calendar's marks and the sidebar — and they have to agree.
+
+A word is a run of non-space characters containing a letter or a digit, so markdown's furniture
+(`#`, `-`, `>`, `---`) does not inflate a bulleted list past the same sentences written as prose.
+The current run of days is counted through **yesterday** when today is unwritten: a day still in
+progress has not been missed, and a streak that collapses at midnight and returns after breakfast
+is a lie both times. Calendar shading uses absolute thresholds (`INTENSITY_STEPS`) rather than a
+scale relative to the writer's own average — a moving scale would re-shade years of finished days
+every time a long entry was written.
+
+`listWrittenCounts()` walks the `days` store once and returns `day → words`; the journal store keeps
+that map and overlays the open day from memory, so today's number tracks the caret without a
+re-scan per keystroke. Everything here is something that already happened — there is no target, no
+share of one, and nothing that can be failed.
+
 ## The repo format
 
 The most important artefact in the project, because it has to make sense to someone who opens the
@@ -152,7 +171,7 @@ github.com for that and picks the repo up afterwards.
 ## Layout of the source
 
 ```
-src/lib/core/     framework-free and unit-tested: markdown, db, git, github, sync, search, themes
+src/lib/core/     framework-free and unit-tested: markdown, db, git, github, sync, search, stats, themes
 src/lib/server/   Worker-only: OAuth, sessions, the proxy allowlist
 src/lib/editor/   CodeMirror setup, live-preview plugin, formatting commands, theme
 src/lib/stores/   Svelte runes

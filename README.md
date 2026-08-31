@@ -157,8 +157,8 @@ to host your own copy. The design and its running status are in [docs/plan.md](d
 ## Where things stand
 
 Early, honest, and usable. The journal works offline, syncs to a GitHub repo, and two devices
-editing the same day converge without losing text — proven by 258 unit tests (run across five
-timezones) and 80 end-to-end tests on desktop and mobile viewports.
+editing the same day converge without losing text — proven by 281 unit tests (run across five
+timezones) and 90 end-to-end tests on desktop and mobile viewports.
 
 It's live at **[likh.dev](https://likh.dev)**. Not yet: images, and a run against real GitHub —
 sync is verified against a complete in-memory GitHub rather than the live API. Hosted sign-in isn't

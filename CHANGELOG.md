@@ -20,6 +20,26 @@ written by any release must stay readable by every later one.
   SvelteKit's default. It reads no storage, so a failure in the database layer cannot fail it too.
 - `pnpm verify` — the full gate (`check`, `test`, `test:tz`, `test:e2e`) in one command.
 - `.nvmrc`, `engines`, `packageManager` and `.editorconfig`, so a contributor's toolchain matches.
+- A quiet account of the year in the sidebar — days written, words, and the run of days in
+  progress — and calendar marks that grow with the length of the entry. All of it is a record of
+  what already happened: there is no target, no share of one, and nothing that can be failed. A day
+  still in progress does not break a run.
+
+### Changed
+
+- Word counts no longer count markdown's furniture. `#`, `-`, `>` and `---` are how the text is
+  shaped, not part of it, and counting them scored a bulleted list higher than the same sentences
+  written as prose.
+
+### Fixed
+
+- The space you leave at the end of a line while thinking of the next word is no longer eaten
+  ([#1](https://github.com/nisnym/likh/issues/1)). The debounced save trimmed trailing whitespace
+  from the record the editor is bound to, so pausing for longer than a moment deleted the space
+  under the cursor and the next word arrived glued to the previous one. Blank lines typed ahead of a
+  new paragraph went the same way, taking the cursor with them. The body is now stored exactly as
+  typed, as `docs/technical.md` always said it was; trimming happens when the day is serialized to a
+  file, which is the only place it was ever needed.
 
 ### Removed
 

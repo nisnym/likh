@@ -36,6 +36,38 @@ test('writes an entry and keeps it across a reload', async ({ page }) => {
 	await expect(await editor(page)).toContainText('Shipped the sync layer today.');
 });
 
+test('a space survives a pause mid-sentence', async ({ page }) => {
+	// Issue #1. The debounced save used to strip trailing whitespace from the
+	// record the editor is bound to, so the space you leave while thinking of the
+	// next word was deleted under the cursor and the word arrived glued on.
+	await page.goto('/');
+
+	const surface = await editor(page);
+	await surface.click();
+	await page.keyboard.type('Shipped the sync layer ');
+
+	// Pause where a writer pauses — after the space — for longer than the debounce.
+	await expect(page.locator('.statusbar')).toContainText('Saved locally');
+	await page.keyboard.type('today.');
+
+	await expect(surface).toContainText('Shipped the sync layer today.');
+});
+
+test('a blank line survives a pause, and the cursor stays after it', async ({ page }) => {
+	// The same root cause seen from the other end: stopping after Enter trimmed
+	// the newlines and dropped the cursor back onto the paragraph above.
+	await page.goto('/');
+
+	const surface = await editor(page);
+	await surface.click();
+	await page.keyboard.type('First paragraph.\n\n');
+
+	await expect(page.locator('.statusbar')).toContainText('Saved locally');
+	await page.keyboard.type('Second paragraph.');
+
+	await expect(page.locator('.cm-line').last()).toHaveText('Second paragraph.');
+});
+
 test('clicking the margin beside the text still puts you in the entry', async ({ page }) => {
 	// The writing column is narrower than the editor, so most of what looks like
 	// the page is scroller rather than text. Clicking there has to reach the
@@ -203,4 +235,59 @@ test('searches across entries', async ({ page }) => {
 	// Choosing a result navigates to that day.
 	await hits.first().click();
 	await expect(await editor(page)).toContainText('the merge strategy for offline edits');
+});
+
+test('the year adds up in the sidebar, and stays quiet until it can', async ({ page }) => {
+	await page.goto('/');
+
+	const calendar = page.getByRole('button', { name: 'Toggle calendar' });
+	const stats = page.getByRole('region', { name: 'Writing stats' });
+
+	await calendar.click();
+
+	// A journal nobody has written in has nothing to report, and a row of
+	// zeroes would read as a target rather than as a fact.
+	await expect(stats).toBeHidden();
+
+	// On a phone the sidebar's scrim covers the entry, so shut it before typing.
+	await page.keyboard.press('Escape');
+	await (await editor(page)).click();
+	await page.keyboard.type('Shipped the sync layer today.');
+	await calendar.click();
+
+	await expect(stats).toContainText('Days written');
+	await expect(stats).toContainText('Words');
+	await expect(stats).toContainText('5');
+});
+
+test('counts a run of days written back to back', async ({ page }) => {
+	await page.goto('/');
+
+	await (await editor(page)).click();
+	await page.keyboard.type('today');
+	await expect(page.locator('.statusbar')).toContainText('Saved locally');
+
+	await page.getByLabel('Previous day').click();
+	await addNote(page, 'yesterday');
+	await expect(page.locator('.statusbar')).toContainText('Saved locally');
+
+	await page.getByRole('button', { name: 'Toggle calendar' }).click();
+
+	const stats = page.getByRole('region', { name: 'Writing stats' });
+	await expect(stats).toContainText('In a row');
+	await expect(stats).toContainText('2 days');
+});
+
+test('the calendar tells a screen reader how much a day holds', async ({ page }) => {
+	await page.goto('/');
+
+	await (await editor(page)).click();
+	await page.keyboard.type('Shipped the sync layer today.');
+	await expect(page.locator('.statusbar')).toContainText('5 words');
+
+	await page.getByRole('button', { name: 'Toggle calendar' }).click();
+
+	// How dark the day's mark is, is decoration. The count itself has to be
+	// readable without seeing it.
+	await expect(page.locator('.day.written').first()).toHaveAttribute('aria-label', /5 words/);
 });

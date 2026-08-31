@@ -1,8 +1,10 @@
-import { getDay, listWrittenKeys, saveDay } from '$lib/core/db/days';
+import { getDay, listWrittenCounts, saveDay } from '$lib/core/db/days';
 import type { DayRecord } from '$lib/core/db/types';
 import { emptyDay } from '$lib/core/db/days';
 import { todayKey, type DayKey } from '$lib/core/date/day';
+import { isEmptyDay } from '$lib/core/repo/day-file';
 import { appendNote } from '$lib/core/repo/note';
+import { countWords } from '$lib/core/stats/writing';
 import { debounce } from '$lib/core/util/debounce';
 import { search } from '$lib/search/client.svelte';
 import { sync } from './sync.svelte';
@@ -23,8 +25,27 @@ class JournalStore {
 	record = $state<DayRecord>(emptyDay(todayKey()));
 	loading = $state(true);
 
-	/** Days with content, for the calendar. */
-	writtenKeys = $state<Set<DayKey>>(new Set());
+	/** Words per written day, as last read from IndexedDB. */
+	#stored = $state<Map<DayKey, number>>(new Map());
+
+	/**
+	 * The same map, with the open day counted from what is on screen.
+	 *
+	 * `#stored` only moves when a write reaches IndexedDB, which is a debounce
+	 * behind the keyboard. Overlaying the record held in memory is what keeps
+	 * today's mark on the calendar and today's line in the sidebar in step with
+	 * the caret, without re-reading the whole store on every keystroke.
+	 */
+	written: ReadonlyMap<DayKey, number> = $derived.by(() => {
+		const live = this.wordCount;
+		if (live === (this.#stored.get(this.date) ?? 0)) return this.#stored;
+
+		const merged = new Map(this.#stored);
+		if (live === 0) merged.delete(this.date);
+		else merged.set(this.date, live);
+
+		return merged;
+	});
 
 	/**
 	 * True between an edit and it reaching IndexedDB.
@@ -36,8 +57,7 @@ class JournalStore {
 	unsaved = $state(false);
 
 	get wordCount(): number {
-		const words = this.record.body.trim().match(/\S+/g);
-		return words ? words.length : 0;
+		return countWords(this.record.body);
 	}
 
 	/** The write currently reaching IndexedDB, so `flush` can be awaited. */
@@ -116,8 +136,9 @@ class JournalStore {
 	/** Never written to; exists so the debounce interval is discoverable in tests. */
 	static readonly persistMs = PERSIST_MS;
 
+	/** Re-read every day's word count. A full scan, so only on boot and after a sync. */
 	async refreshWritten(): Promise<void> {
-		this.writtenKeys = new Set(await listWrittenKeys());
+		this.#stored = await listWrittenCounts();
 	}
 
 	async #write(date: DayKey, body: string): Promise<void> {
@@ -137,9 +158,13 @@ class JournalStore {
 		// Tell the scheduler there is something to commit. It decides when.
 		if (saved.dirty === 1) sync.edited();
 
-		const hadContent = this.writtenKeys.has(date);
-		const hasContent = saved.body.trim() !== '';
-		if (hadContent !== hasContent) await this.refreshWritten();
+		// Patch the one day that changed rather than rescanning the store; the
+		// calendar and the sidebar read this, and a save is far too frequent a
+		// moment to walk every entry the journal holds.
+		const next = new Map(this.#stored);
+		if (isEmptyDay(saved)) next.delete(date);
+		else next.set(date, countWords(saved.body));
+		this.#stored = next;
 	}
 }
 

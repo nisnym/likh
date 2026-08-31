@@ -9,10 +9,12 @@
 		todayKey,
 		type DayKey
 	} from '$lib/core/date/day';
+	import { intensity } from '$lib/core/stats/writing';
 
 	interface Props {
 		selected: DayKey;
-		written: Set<DayKey>;
+		/** Words written on each day that holds anything. Absent means unwritten. */
+		written: ReadonlyMap<DayKey, number>;
 		onSelect: (date: DayKey) => void;
 		locale?: string;
 	}
@@ -47,6 +49,30 @@
 	const monthDays = $derived(
 		Array.from({ length: daysInMonth(cursorMonth) }, (_, i) => addDays(cursorMonth, i))
 	);
+
+	const number = $derived(new Intl.NumberFormat(locale));
+
+	/**
+	 * How dark a written day's mark is, 1 to 4.
+	 *
+	 * Floored at 1 so a day that holds only tags still shows it was touched —
+	 * `intensity` reserves 0 for a day with nothing on it at all.
+	 */
+	function mark(date: DayKey): number {
+		return Math.max(intensity(written.get(date) ?? 0), 1);
+	}
+
+	/**
+	 * The mark is the one thing on this grid a screen reader cannot see, so the
+	 * count goes in the label rather than being left as decoration.
+	 */
+	function dayLabel(date: DayKey): string {
+		const long = formatLong(date, locale);
+		const words = written.get(date);
+		if (words === undefined) return long;
+
+		return `${long} — ${number.format(words)} ${words === 1 ? 'word' : 'words'}`;
+	}
 
 	function step(months: number) {
 		const [year, month] = cursorMonth.split('-').map(Number);
@@ -101,8 +127,9 @@
 				class:selected={date === selected}
 				class:today={date === today}
 				class:written={written.has(date)}
+				style:--mark={mark(date)}
 				aria-current={date === selected ? 'date' : undefined}
-				aria-label={formatLong(date, locale)}
+				aria-label={dayLabel(date)}
 				onclick={() => onSelect(date)}
 			>
 				{Number(date.slice(8))}
@@ -179,15 +206,20 @@
 		color: var(--ink);
 	}
 
-	/* A quiet dot marks a day with writing in it — the month at a glance. */
+	/*
+	 * A quiet dot marks a day with writing in it, growing and darkening with the
+	 * length of the entry — the month, and roughly how much of it, at a glance.
+	 * `--mark` runs 1 to 4; see `INTENSITY_STEPS`.
+	 */
 	.day.written::after {
 		content: '';
 		position: absolute;
 		bottom: 3px;
-		width: 3px;
-		height: 3px;
+		width: calc(2px + var(--mark) * 1px);
+		height: calc(2px + var(--mark) * 1px);
 		border-radius: 50%;
-		background: var(--ink-faint);
+		background: var(--ink-muted);
+		opacity: calc(0.4 + var(--mark) * 0.15);
 	}
 
 	.day.today {
@@ -203,6 +235,7 @@
 	.day.selected.written::after,
 	.day.selected.today::after {
 		background: var(--bg);
+		opacity: 1;
 	}
 
 	.day.selected.today {
